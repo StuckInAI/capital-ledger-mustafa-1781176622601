@@ -14,10 +14,7 @@ export type TransactionCategory =
   | 'rent'
   | 'other';
 
-export type DebtType = 'lent' | 'borrowed';
-export type DebtStatus = 'pending' | 'partial' | 'settled';
-
-export interface Transaction {
+export type Transaction = {
   id: string;
   type: TransactionType;
   amount: number;
@@ -26,9 +23,12 @@ export interface Transaction {
   date: string;
   note: string;
   tags: string[];
-}
+};
 
-export interface Debt {
+export type DebtType = 'lent' | 'borrowed';
+export type DebtStatus = 'pending' | 'partial' | 'settled';
+
+export type Debt = {
   id: string;
   type: DebtType;
   person: string;
@@ -38,25 +38,25 @@ export interface Debt {
   dueDate: string;
   description: string;
   status: DebtStatus;
-}
+};
 
-export interface Capital {
+export type Capital = {
   id: string;
   name: string;
   amount: number;
   type: string;
   note: string;
   updatedAt: string;
-}
+};
 
-export interface Budget {
+export type Budget = {
   id: string;
   category: TransactionCategory;
-  amount: number;
   month: string;
-}
+  limit: number;
+};
 
-export interface AppData {
+export type AppData = {
   transactions: Transaction[];
   debts: Debt[];
   capitals: Capital[];
@@ -64,4 +64,4 @@ export interface AppData {
   currency: string;
   userName: string;
   googleConnected: boolean;
-}
+};

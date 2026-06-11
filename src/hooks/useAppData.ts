@@ -1,11 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
 import { AppData, Transaction, Debt, Capital, Budget } from '@/types';
 import { loadData, saveData, generateId } from '@/lib/storage';
+import { Language } from '@/lib/i18n';
 
 export function useAppData() {
   const [data, setData] = useState<AppData>(() => loadData());
+  const [lang, setLangState] = useState<Language>(() => {
+    return (localStorage.getItem('dailykhaata_lang') as Language) || 'en';
+  });
 
-  // Apply / remove dark class on <html>
+  const setLang = useCallback((l: Language) => {
+    setLangState(l);
+    localStorage.setItem('dailykhaata_lang', l);
+    document.documentElement.dir = l === 'ur' ? 'rtl' : 'ltr';
+    document.documentElement.lang = l;
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dir = lang === 'ur' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   useEffect(() => {
     const root = document.documentElement;
     if (data.darkMode) {
@@ -23,7 +38,6 @@ export function useAppData() {
     });
   }, []);
 
-  // Transactions
   const addTransaction = useCallback(
     (tx: Omit<Transaction, 'id'>) => {
       updateData((prev) => ({
@@ -54,7 +68,6 @@ export function useAppData() {
     [updateData]
   );
 
-  // Debts
   const addDebt = useCallback(
     (debt: Omit<Debt, 'id'>) => {
       updateData((prev) => ({
@@ -85,7 +98,6 @@ export function useAppData() {
     [updateData]
   );
 
-  // Capitals
   const addCapital = useCallback(
     (capital: Omit<Capital, 'id'>) => {
       updateData((prev) => ({
@@ -116,7 +128,6 @@ export function useAppData() {
     [updateData]
   );
 
-  // Budgets
   const addBudget = useCallback(
     (budget: Omit<Budget, 'id'>) => {
       updateData((prev) => ({
@@ -142,7 +153,6 @@ export function useAppData() {
     [updateData]
   );
 
-  // Settings
   const updateSettings = useCallback(
     (settings: Partial<Pick<AppData, 'currency' | 'userName' | 'googleConnected' | 'darkMode'>>) => {
       updateData((prev) => ({ ...prev, ...settings }));
@@ -157,6 +167,8 @@ export function useAppData() {
 
   return {
     data,
+    lang,
+    setLang,
     addTransaction,
     updateTransaction,
     deleteTransaction,

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Wallet, Users, Plus, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '@/lib/context';
+import { t } from '@/lib/i18n';
 import { formatCurrency, getCurrentMonth, getMonthTransactions, formatDate } from '@/lib/utils';
 import StatCard from '@/components/StatCard';
 import Modal from '@/components/Modal';
@@ -9,15 +10,15 @@ import TransactionForm from '@/components/TransactionForm';
 import { Transaction } from '@/types';
 
 export default function Dashboard() {
-  const { data, addTransaction } = useAppContext();
+  const { data, addTransaction, lang } = useAppContext();
   const navigate = useNavigate();
   const [showAdd, setShowAdd] = useState(false);
 
   const currentMonth = getCurrentMonth();
   const monthTxs = useMemo(() => getMonthTransactions(data.transactions, currentMonth), [data.transactions, currentMonth]);
 
-  const totalIncome = useMemo(() => monthTxs.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0), [monthTxs]);
-  const totalExpense = useMemo(() => monthTxs.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0), [monthTxs]);
+  const totalIncome = useMemo(() => monthTxs.filter((tx) => tx.type === 'income').reduce((s, tx) => s + tx.amount, 0), [monthTxs]);
+  const totalExpense = useMemo(() => monthTxs.filter((tx) => tx.type === 'expense').reduce((s, tx) => s + tx.amount, 0), [monthTxs]);
   const balance = totalIncome - totalExpense;
   const totalCapital = useMemo(() => data.capitals.reduce((s, c) => s + c.amount, 0), [data.capitals]);
   const pendingDebts = useMemo(() => data.debts.filter((d) => d.status !== 'settled'), [data.debts]);
@@ -31,27 +32,27 @@ export default function Dashboard() {
   };
 
   const now = new Date();
-  const greeting = now.getHours() < 12 ? 'Good morning' : now.getHours() < 18 ? 'Good afternoon' : 'Good evening';
+  const greetingKey = now.getHours() < 12 ? 'goodMorning' : now.getHours() < 18 ? 'goodAfternoon' : 'goodEvening';
 
   return (
     <div className="px-4 py-5 space-y-5">
       {/* Greeting */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-400 dark:text-gray-500 text-sm">{greeting} 👋</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm">{t(lang, greetingKey)} 👋</p>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {data.userName || 'Welcome!'}
+            {data.userName || t(lang, 'welcome')}
           </h1>
         </div>
         <button onClick={() => setShowAdd(true)} className="btn-primary">
           <Plus size={18} />
-          Add
+          {t(lang, 'add')}
         </button>
       </div>
 
       {/* Balance Card */}
       <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-5 text-white shadow-lg">
-        <p className="text-blue-200 text-sm font-medium">This Month's Balance</p>
+        <p className="text-blue-200 text-sm font-medium">{t(lang, 'thisMonthBalance')}</p>
         <p className="text-4xl font-bold mt-1">{formatCurrency(balance, data.currency)}</p>
         <div className="flex gap-4 mt-4">
           <div className="flex items-center gap-1.5">
@@ -59,7 +60,7 @@ export default function Dashboard() {
               <TrendingUp size={14} />
             </div>
             <div>
-              <p className="text-blue-200 text-xs">Income</p>
+              <p className="text-blue-200 text-xs">{t(lang, 'income')}</p>
               <p className="font-semibold text-sm">{formatCurrency(totalIncome, data.currency)}</p>
             </div>
           </div>
@@ -68,7 +69,7 @@ export default function Dashboard() {
               <TrendingDown size={14} />
             </div>
             <div>
-              <p className="text-blue-200 text-xs">Expenses</p>
+              <p className="text-blue-200 text-xs">{t(lang, 'expenses')}</p>
               <p className="font-semibold text-sm">{formatCurrency(totalExpense, data.currency)}</p>
             </div>
           </div>
@@ -78,39 +79,39 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
         <StatCard
-          label="Total Capital"
+          label={t(lang, 'totalCapital')}
           value={formatCurrency(totalCapital, data.currency)}
           icon={<Wallet size={20} />}
           color="blue"
-          sub={`${data.capitals.length} sources`}
+          sub={`${data.capitals.length} ${t(lang, 'sources')}`}
         />
         <StatCard
-          label="Pending Debts"
+          label={t(lang, 'pendingDebts')}
           value={formatCurrency(debtTotal, data.currency)}
           icon={<Users size={20} />}
           color="red"
-          sub={`${pendingDebts.length} active`}
+          sub={`${pendingDebts.length} ${t(lang, 'active')}`}
         />
       </div>
 
       {/* Recent Transactions */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold text-gray-900 dark:text-gray-100">Recent Transactions</h2>
+          <h2 className="font-bold text-gray-900 dark:text-gray-100">{t(lang, 'recentTransactions')}</h2>
           <button
             onClick={() => navigate('/transactions')}
             className="text-blue-600 dark:text-blue-400 text-sm flex items-center gap-1 hover:underline"
           >
-            See all <ArrowRight size={14} />
+            {t(lang, 'seeAll')} <ArrowRight size={14} />
           </button>
         </div>
 
         {recentTxs.length === 0 ? (
           <div className="card text-center py-8">
             <p className="text-3xl mb-2">📊</p>
-            <p className="text-gray-400 dark:text-gray-500 text-sm">No transactions yet</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">{t(lang, 'noTransactions')}</p>
             <button onClick={() => setShowAdd(true)} className="text-blue-600 dark:text-blue-400 text-sm mt-2 hover:underline">
-              Add your first one
+              {t(lang, 'addFirst')}
             </button>
           </div>
         ) : (
@@ -124,9 +125,7 @@ export default function Dashboard() {
                       : 'bg-red-50 dark:bg-red-900/30'
                   }`}
                 >
-                  <span className="text-lg">
-                    {tx.type === 'income' ? '⬆️' : '⬇️'}
-                  </span>
+                  <span className="text-lg">{tx.type === 'income' ? '⬆️' : '⬇️'}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
@@ -148,7 +147,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="New Transaction">
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title={t(lang, 'newTransaction')}>
         <TransactionForm onSubmit={handleAdd} onCancel={() => setShowAdd(false)} />
       </Modal>
     </div>

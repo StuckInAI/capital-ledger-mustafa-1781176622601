@@ -1,8 +1,11 @@
 import { createContext, useContext } from 'react';
 import { AppData, Transaction, Debt, Capital, Budget } from '@/types';
+import { Language } from '@/lib/i18n';
 
 type AppDataContextType = {
   data: AppData;
+  lang: Language;
+  setLang: (l: Language) => void;
   addTransaction: (tx: Omit<Transaction, 'id'>) => void;
   updateTransaction: (id: string, tx: Partial<Transaction>) => void;
   deleteTransaction: (id: string) => void;

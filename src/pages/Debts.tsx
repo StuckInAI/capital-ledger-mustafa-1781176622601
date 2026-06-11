@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Trash2, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { useAppContext } from '@/lib/context';
+import { t } from '@/lib/i18n';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
@@ -8,6 +9,7 @@ import { Debt, DebtType, DebtStatus } from '@/types';
 import clsx from 'clsx';
 
 function DebtForm({ onSubmit, onCancel }: { onSubmit: (d: Omit<Debt, 'id'>) => void; onCancel: () => void }) {
+  const { lang } = useAppContext();
   const [type, setType] = useState<DebtType>('lent');
   const [person, setPerson] = useState('');
   const [amount, setAmount] = useState('');
@@ -33,55 +35,56 @@ function DebtForm({ onSubmit, onCancel }: { onSubmit: (d: Omit<Debt, 'id'>) => v
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
-        {(['lent', 'borrowed'] as DebtType[]).map((t) => (
+        {(['lent', 'borrowed'] as DebtType[]).map((tp) => (
           <button
-            key={t}
+            key={tp}
             type="button"
-            onClick={() => setType(t)}
+            onClick={() => setType(tp)}
             className={clsx(
-              'flex-1 py-2 rounded-lg text-sm font-semibold transition-all capitalize',
-              type === t
-                ? t === 'lent'
+              'flex-1 py-2 rounded-lg text-sm font-semibold transition-all',
+              type === tp
+                ? tp === 'lent'
                   ? 'bg-blue-500 text-white shadow'
                   : 'bg-orange-500 text-white shadow'
                 : 'text-gray-500 dark:text-gray-400'
             )}
           >
-            {t === 'lent' ? '💸 I Lent' : '🤝 I Borrowed'}
+            {tp === 'lent' ? `💸 ${t(lang, 'iLent')}` : `🤝 ${t(lang, 'iBorrowed')}`}
           </button>
         ))}
       </div>
 
       <div>
-        <label className="label">Person / Party Name</label>
-        <input type="text" className="input" placeholder="Enter name" value={person} onChange={(e: any) => setPerson(e.target.value)} required />
+        <label className="label">{t(lang, 'personName')}</label>
+        <input type="text" className="input" placeholder={t(lang, 'enterName')} value={person} onChange={(e: any) => setPerson(e.target.value)} required />
       </div>
       <div>
-        <label className="label">Amount</label>
+        <label className="label">{t(lang, 'amount')}</label>
         <input type="number" className="input" placeholder="0" value={amount} onChange={(e: any) => setAmount(e.target.value)} min="0" step="any" required />
       </div>
       <div>
-        <label className="label">Description</label>
-        <input type="text" className="input" placeholder="What is this for?" value={description} onChange={(e: any) => setDescription(e.target.value)} />
+        <label className="label">{t(lang, 'description')}</label>
+        <input type="text" className="input" placeholder={t(lang, 'whatIsFor')} value={description} onChange={(e: any) => setDescription(e.target.value)} />
       </div>
       <div>
-        <label className="label">Date</label>
+        <label className="label">{t(lang, 'date')}</label>
         <input type="date" className="input" value={date} onChange={(e: any) => setDate(e.target.value)} required />
       </div>
       <div>
-        <label className="label">Due Date (optional)</label>
+        <label className="label">{t(lang, 'dueDate')}</label>
         <input type="date" className="input" value={dueDate} onChange={(e: any) => setDueDate(e.target.value)} />
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onCancel} className="btn-secondary flex-1 justify-center">Cancel</button>
-        <button type="submit" className="btn-primary flex-1 justify-center">Add Debt</button>
+        <button type="button" onClick={onCancel} className="btn-secondary flex-1 justify-center">{t(lang, 'cancel')}</button>
+        <button type="submit" className="btn-primary flex-1 justify-center">{t(lang, 'addDebt')}</button>
       </div>
     </form>
   );
 }
 
 function PaymentModal({ debt, currency, onSettle, onClose }: { debt: Debt; currency: string; onSettle: (amount: number) => void; onClose: () => void }) {
+  const { lang } = useAppContext();
   const [amount, setAmount] = useState('');
   const remaining = debt.amount - debt.paidAmount;
 
@@ -95,23 +98,23 @@ function PaymentModal({ debt, currency, onSettle, onClose }: { debt: Debt; curre
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Remaining Amount</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t(lang, 'remainingAmount')}</p>
         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(remaining, currency)}</p>
       </div>
       <div>
-        <label className="label">Payment Amount</label>
+        <label className="label">{t(lang, 'paymentAmount')}</label>
         <input type="number" className="input" placeholder="0" value={amount} onChange={(e: any) => setAmount(e.target.value)} min="0" max={remaining} step="any" required />
       </div>
       <div className="flex gap-3">
-        <button type="button" onClick={() => setAmount(remaining.toString())} className="btn-secondary flex-1 justify-center">Full Amount</button>
-        <button type="submit" className="btn-primary flex-1 justify-center">Record Payment</button>
+        <button type="button" onClick={() => setAmount(remaining.toString())} className="btn-secondary flex-1 justify-center">{t(lang, 'fullAmount')}</button>
+        <button type="submit" className="btn-primary flex-1 justify-center">{t(lang, 'recordPayment')}</button>
       </div>
     </form>
   );
 }
 
 export default function Debts() {
-  const { data, addDebt, updateDebt, deleteDebt } = useAppContext();
+  const { data, addDebt, updateDebt, deleteDebt, lang } = useAppContext();
   const [showAdd, setShowAdd] = useState(false);
   const [payDebt, setPayDebt] = useState<Debt | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | DebtType>('all');
@@ -142,23 +145,29 @@ export default function Debts() {
     return <AlertCircle size={14} className="text-red-400" />;
   };
 
+  const tabLabels: Record<'all' | DebtType, string> = {
+    all: t(lang, 'all'),
+    lent: t(lang, 'lent'),
+    borrowed: t(lang, 'borrowed'),
+  };
+
   return (
     <div className="px-4 py-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Debts</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t(lang, 'debts')}</h1>
         <button onClick={() => setShowAdd(true)} className="btn-primary">
-          <Plus size={18} /> Add
+          <Plus size={18} /> {t(lang, 'add')}
         </button>
       </div>
 
       {/* Summary */}
       <div className="flex gap-3">
         <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
-          <p className="text-xs text-blue-500 dark:text-blue-400 font-medium">I Lent</p>
+          <p className="text-xs text-blue-500 dark:text-blue-400 font-medium">{t(lang, 'iLent')}</p>
           <p className="text-sm font-bold text-blue-700 dark:text-blue-400">{formatCurrency(totalLent, data.currency)}</p>
         </div>
         <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3">
-          <p className="text-xs text-orange-500 dark:text-orange-400 font-medium">I Borrowed</p>
+          <p className="text-xs text-orange-500 dark:text-orange-400 font-medium">{t(lang, 'iBorrowed')}</p>
           <p className="text-sm font-bold text-orange-700 dark:text-orange-400">{formatCurrency(totalBorrowed, data.currency)}</p>
         </div>
       </div>
@@ -170,13 +179,13 @@ export default function Debts() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={clsx(
-              'px-3 py-1.5 rounded-xl text-xs font-semibold transition-all capitalize',
+              'px-3 py-1.5 rounded-xl text-xs font-semibold transition-all',
               activeTab === tab
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
             )}
           >
-            {tab}
+            {tabLabels[tab]}
           </button>
         ))}
       </div>
@@ -184,11 +193,11 @@ export default function Debts() {
       {filtered.length === 0 ? (
         <EmptyState
           icon="🤝"
-          title="No debts recorded"
-          description="Track money you've lent or borrowed"
+          title={t(lang, 'noDebtsRecorded')}
+          description={t(lang, 'trackDebts')}
           action={
             <button onClick={() => setShowAdd(true)} className="btn-primary">
-              <Plus size={16} /> Add Debt
+              <Plus size={16} /> {t(lang, 'addDebt')}
             </button>
           }
         />
@@ -217,7 +226,7 @@ export default function Debts() {
                         {statusIcon(debt)}
                       </div>
                       <p className="text-xs text-gray-400 dark:text-gray-500">
-                        {debt.type === 'lent' ? 'Lent to' : 'Borrowed from'} · {formatDate(debt.date)}
+                        {debt.type === 'lent' ? t(lang, 'lentTo') : t(lang, 'borrowedFrom')} · {formatDate(debt.date)}
                       </p>
                     </div>
                   </div>
@@ -226,7 +235,7 @@ export default function Debts() {
                       {formatCurrency(debt.amount, data.currency)}
                     </p>
                     {debt.paidAmount > 0 && (
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Paid: {formatCurrency(debt.paidAmount, data.currency)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">{t(lang, 'paid')}: {formatCurrency(debt.paidAmount, data.currency)}</p>
                     )}
                   </div>
                 </div>
@@ -241,9 +250,9 @@ export default function Debts() {
                       />
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{Math.round(progress)}% paid</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{Math.round(progress)}{t(lang, 'percentPaid')}</span>
                       {debt.status !== 'settled' && (
-                        <span className="text-xs text-gray-400 dark:text-gray-500">Remaining: {formatCurrency(remaining, data.currency)}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{t(lang, 'remaining')}: {formatCurrency(remaining, data.currency)}</span>
                       )}
                     </div>
                   </div>
@@ -257,13 +266,10 @@ export default function Debts() {
                       onClick={() => setPayDebt(debt)}
                       className="btn-primary flex-1 justify-center text-xs py-1.5"
                     >
-                      <CheckCircle size={14} /> Record Payment
+                      <CheckCircle size={14} /> {t(lang, 'recordPayment')}
                     </button>
                   )}
-                  <button
-                    onClick={() => deleteDebt(debt.id)}
-                    className="btn-danger py-1.5 px-3"
-                  >
+                  <button onClick={() => deleteDebt(debt.id)} className="btn-danger py-1.5 px-3">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -273,11 +279,11 @@ export default function Debts() {
         </div>
       )}
 
-      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Debt">
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title={t(lang, 'addDebt')}>
         <DebtForm onSubmit={handleAdd} onCancel={() => setShowAdd(false)} />
       </Modal>
 
-      <Modal open={!!payDebt} onClose={() => setPayDebt(null)} title="Record Payment">
+      <Modal open={!!payDebt} onClose={() => setPayDebt(null)} title={t(lang, 'recordPayment')}>
         {payDebt && (
           <PaymentModal
             debt={payDebt}

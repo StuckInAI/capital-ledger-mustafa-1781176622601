@@ -15,7 +15,6 @@ export type TransactionCategory =
   | 'other';
 
 export type DebtType = 'lent' | 'borrowed';
-
 export type DebtStatus = 'pending' | 'partial' | 'settled';
 
 export interface Transaction {
@@ -25,8 +24,8 @@ export interface Transaction {
   category: TransactionCategory;
   description: string;
   date: string;
-  tags: string[];
   note: string;
+  tags: string[];
 }
 
 export interface Debt {
@@ -45,7 +44,7 @@ export interface Capital {
   id: string;
   name: string;
   amount: number;
-  type: 'cash' | 'bank' | 'investment' | 'other';
+  type: string;
   note: string;
   updatedAt: string;
 }
@@ -53,7 +52,7 @@ export interface Capital {
 export interface Budget {
   id: string;
   category: TransactionCategory;
-  limit: number;
+  amount: number;
   month: string;
 }
 

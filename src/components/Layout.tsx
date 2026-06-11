@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { useAppContext } from '@/lib/context';
 import { t } from '@/lib/i18n';
 import Modal from '@/components/Modal';
+import Logo from '@/components/Logo';
 import { useState } from 'react';
 
 type LayoutProps = { onLogout: () => void; currentUser: string };
@@ -29,10 +30,8 @@ export default function Layout({ onLogout, currentUser }: LayoutProps) {
     >
       {/* Top bar */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center">
-            <span className="text-white text-sm font-bold">₨</span>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <Logo size="sm" />
           <div>
             <span className="font-bold text-gray-900 dark:text-gray-100 text-base leading-tight block">
               Daily Khaata

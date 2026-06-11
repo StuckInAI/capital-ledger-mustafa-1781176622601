@@ -14,7 +14,7 @@ type AppDataContextType = {
   deleteCapital: (id: string) => void;
   addBudget: (budget: Omit<Budget, 'id'>) => void;
   deleteBudget: (id: string) => void;
-  updateSettings: (settings: Partial<Pick<AppData, 'currency' | 'userName' | 'googleConnected'>>) => void;
+  updateSettings: (settings: Partial<Pick<AppData, 'currency' | 'userName' | 'googleConnected' | 'darkMode'>>) => void;
   replaceAllData: (newData: AppData) => void;
 };
 

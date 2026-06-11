@@ -2,7 +2,7 @@ import { AppData } from '@/types';
 
 const STORAGE_KEY = 'cashbook_data';
 
-const defaultData: AppData = {
+export const defaultData: AppData = {
   transactions: [],
   debts: [],
   capitals: [],
@@ -10,28 +10,26 @@ const defaultData: AppData = {
   currency: 'PKR',
   userName: '',
   googleConnected: false,
+  darkMode: false,
 };
 
 export function loadData(): AppData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...defaultData };
-    return { ...defaultData, ...JSON.parse(raw) };
+    if (!raw) return defaultData;
+    const parsed = JSON.parse(raw) as Partial<AppData>;
+    return { ...defaultData, ...parsed };
   } catch {
-    return { ...defaultData };
+    return defaultData;
   }
 }
 
 export function saveData(data: AppData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e: any) {
-    console.error('Failed to save data:', e.message);
-  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
 export function exportToJSON(data: AppData): void {
@@ -47,9 +45,9 @@ export function exportToJSON(data: AppData): void {
 export function importFromJSON(file: File): Promise<AppData> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = (e) => {
       try {
-        const data = JSON.parse(e.target.result as string);
+        const data = JSON.parse(e.target?.result as string) as AppData;
         resolve({ ...defaultData, ...data });
       } catch {
         reject(new Error('Invalid backup file'));

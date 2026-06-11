@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Trash2, Edit2, Wallet } from 'lucide-react';
+import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { useAppContext } from '@/lib/context';
 import { formatCurrency } from '@/lib/utils';
 import Modal from '@/components/Modal';
@@ -18,10 +18,10 @@ const typeEmoji: Record<CapitalType, string> = {
 };
 
 const typeColors: Record<CapitalType, string> = {
-  cash: 'bg-green-50 text-green-600',
-  bank: 'bg-blue-50 text-blue-600',
-  investment: 'bg-purple-50 text-purple-600',
-  other: 'bg-gray-50 text-gray-600',
+  cash: 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+  bank: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+  investment: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+  other: 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400',
 };
 
 function CapitalForm({
@@ -68,8 +68,8 @@ function CapitalForm({
               className={clsx(
                 'flex flex-col items-center gap-1 p-2 rounded-xl border text-xs font-medium transition-all',
                 type === t
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-200'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  : 'border-gray-100 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-500'
               )}
             >
               <span className="text-xl">{typeEmoji[t]}</span>
@@ -127,7 +127,7 @@ export default function Capitals() {
   return (
     <div className="px-4 py-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Capital</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Capital</h1>
         <button onClick={() => setShowAdd(true)} className="btn-primary">
           <Plus size={18} /> Add
         </button>
@@ -169,15 +169,15 @@ export default function Capitals() {
                 {typeEmoji[cap.type as CapitalType]}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900">{cap.name}</p>
-                <p className="text-xs text-gray-400 capitalize">{cap.type}{cap.note ? ` · ${cap.note}` : ''}</p>
+                <p className="font-semibold text-gray-900 dark:text-gray-100">{cap.name}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 capitalize">{cap.type}{cap.note ? ` · ${cap.note}` : ''}</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <p className="font-bold text-gray-900">{formatCurrency(cap.amount, data.currency)}</p>
-                <button onClick={() => setEditCapital(cap)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">
+                <p className="font-bold text-gray-900 dark:text-gray-100">{formatCurrency(cap.amount, data.currency)}</p>
+                <button onClick={() => setEditCapital(cap)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500">
                   <Edit2 size={14} />
                 </button>
-                <button onClick={() => deleteCapital(cap.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500">
+                <button onClick={() => deleteCapital(cap.id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 dark:text-gray-500 hover:text-red-500">
                   <Trash2 size={14} />
                 </button>
               </div>

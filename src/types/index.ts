@@ -1,28 +1,13 @@
 export type TransactionType = 'income' | 'expense';
 
-export type TransactionCategory =
-  | 'salary'
-  | 'business'
-  | 'investment'
-  | 'food'
-  | 'transport'
-  | 'shopping'
-  | 'bills'
-  | 'health'
-  | 'entertainment'
-  | 'education'
-  | 'rent'
-  | 'other';
-
 export type Transaction = {
   id: string;
   type: TransactionType;
   amount: number;
-  category: TransactionCategory;
+  category: string;
   description: string;
-  date: string;
   note: string;
-  tags: string[];
+  date: string;
 };
 
 export type DebtType = 'lent' | 'borrowed';
@@ -51,9 +36,9 @@ export type Capital = {
 
 export type Budget = {
   id: string;
-  category: TransactionCategory;
+  category: string;
+  amount: number;
   month: string;
-  limit: number;
 };
 
 export type AppData = {
@@ -64,4 +49,5 @@ export type AppData = {
   currency: string;
   userName: string;
   googleConnected: boolean;
+  darkMode: boolean;
 };

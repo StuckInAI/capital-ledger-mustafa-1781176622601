@@ -1,9 +1,19 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AppData, Transaction, Debt, Capital, Budget } from '@/types';
 import { loadData, saveData, generateId } from '@/lib/storage';
 
 export function useAppData() {
   const [data, setData] = useState<AppData>(() => loadData());
+
+  // Apply / remove dark class on <html>
+  useEffect(() => {
+    const root = document.documentElement;
+    if (data.darkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [data.darkMode]);
 
   const updateData = useCallback((updater: (prev: AppData) => AppData) => {
     setData((prev) => {
@@ -111,7 +121,12 @@ export function useAppData() {
     (budget: Omit<Budget, 'id'>) => {
       updateData((prev) => ({
         ...prev,
-        budgets: [...prev.budgets.filter((b) => !(b.category === budget.category && b.month === budget.month)), { ...budget, id: generateId() }],
+        budgets: [
+          ...prev.budgets.filter(
+            (b) => !(b.category === budget.category && b.month === budget.month)
+          ),
+          { ...budget, id: generateId() },
+        ],
       }));
     },
     [updateData]
@@ -129,19 +144,16 @@ export function useAppData() {
 
   // Settings
   const updateSettings = useCallback(
-    (settings: Partial<Pick<AppData, 'currency' | 'userName' | 'googleConnected'>>) => {
+    (settings: Partial<Pick<AppData, 'currency' | 'userName' | 'googleConnected' | 'darkMode'>>) => {
       updateData((prev) => ({ ...prev, ...settings }));
     },
     [updateData]
   );
 
-  const replaceAllData = useCallback(
-    (newData: AppData) => {
-      saveData(newData);
-      setData(newData);
-    },
-    []
-  );
+  const replaceAllData = useCallback((newData: AppData) => {
+    saveData(newData);
+    setData(newData);
+  }, []);
 
   return {
     data,

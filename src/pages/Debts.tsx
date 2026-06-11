@@ -5,7 +5,6 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
 import { Debt, DebtType, DebtStatus } from '@/types';
-import { generateId } from '@/lib/storage';
 import clsx from 'clsx';
 
 function DebtForm({ onSubmit, onCancel }: { onSubmit: (d: Omit<Debt, 'id'>) => void; onCancel: () => void }) {
@@ -33,7 +32,7 @@ function DebtForm({ onSubmit, onCancel }: { onSubmit: (d: Omit<Debt, 'id'>) => v
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex bg-gray-100 rounded-xl p-1">
+      <div className="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
         {(['lent', 'borrowed'] as DebtType[]).map((t) => (
           <button
             key={t}
@@ -45,7 +44,7 @@ function DebtForm({ onSubmit, onCancel }: { onSubmit: (d: Omit<Debt, 'id'>) => v
                 ? t === 'lent'
                   ? 'bg-blue-500 text-white shadow'
                   : 'bg-orange-500 text-white shadow'
-                : 'text-gray-500'
+                : 'text-gray-500 dark:text-gray-400'
             )}
           >
             {t === 'lent' ? '💸 I Lent' : '🤝 I Borrowed'}
@@ -95,9 +94,9 @@ function PaymentModal({ debt, currency, onSettle, onClose }: { debt: Debt; curre
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-gray-50 rounded-xl p-4">
-        <p className="text-sm text-gray-500">Remaining Amount</p>
-        <p className="text-2xl font-bold text-gray-900">{formatCurrency(remaining, currency)}</p>
+      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Remaining Amount</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(remaining, currency)}</p>
       </div>
       <div>
         <label className="label">Payment Amount</label>
@@ -146,7 +145,7 @@ export default function Debts() {
   return (
     <div className="px-4 py-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Debts</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Debts</h1>
         <button onClick={() => setShowAdd(true)} className="btn-primary">
           <Plus size={18} /> Add
         </button>
@@ -154,13 +153,13 @@ export default function Debts() {
 
       {/* Summary */}
       <div className="flex gap-3">
-        <div className="flex-1 bg-blue-50 rounded-xl p-3">
-          <p className="text-xs text-blue-500 font-medium">I Lent</p>
-          <p className="text-sm font-bold text-blue-700">{formatCurrency(totalLent, data.currency)}</p>
+        <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
+          <p className="text-xs text-blue-500 dark:text-blue-400 font-medium">I Lent</p>
+          <p className="text-sm font-bold text-blue-700 dark:text-blue-400">{formatCurrency(totalLent, data.currency)}</p>
         </div>
-        <div className="flex-1 bg-orange-50 rounded-xl p-3">
-          <p className="text-xs text-orange-500 font-medium">I Borrowed</p>
-          <p className="text-sm font-bold text-orange-700">{formatCurrency(totalBorrowed, data.currency)}</p>
+        <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3">
+          <p className="text-xs text-orange-500 dark:text-orange-400 font-medium">I Borrowed</p>
+          <p className="text-sm font-bold text-orange-700 dark:text-orange-400">{formatCurrency(totalBorrowed, data.currency)}</p>
         </div>
       </div>
 
@@ -172,7 +171,9 @@ export default function Debts() {
             onClick={() => setActiveTab(tab)}
             className={clsx(
               'px-3 py-1.5 rounded-xl text-xs font-semibold transition-all capitalize',
-              activeTab === tab ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              activeTab === tab
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
             )}
           >
             {tab}
@@ -203,27 +204,29 @@ export default function Debts() {
                     <div
                       className={clsx(
                         'w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0',
-                        debt.type === 'lent' ? 'bg-blue-50' : 'bg-orange-50'
+                        debt.type === 'lent'
+                          ? 'bg-blue-50 dark:bg-blue-900/30'
+                          : 'bg-orange-50 dark:bg-orange-900/30'
                       )}
                     >
                       {debt.type === 'lent' ? '💸' : '🤝'}
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <p className="font-semibold text-gray-900 text-sm">{debt.person}</p>
+                        <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{debt.person}</p>
                         {statusIcon(debt)}
                       </div>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
                         {debt.type === 'lent' ? 'Lent to' : 'Borrowed from'} · {formatDate(debt.date)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={clsx('font-bold text-sm', debt.type === 'lent' ? 'text-blue-600' : 'text-orange-600')}>
+                    <p className={clsx('font-bold text-sm', debt.type === 'lent' ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400')}>
                       {formatCurrency(debt.amount, data.currency)}
                     </p>
                     {debt.paidAmount > 0 && (
-                      <p className="text-xs text-gray-400">Paid: {formatCurrency(debt.paidAmount, data.currency)}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">Paid: {formatCurrency(debt.paidAmount, data.currency)}</p>
                     )}
                   </div>
                 </div>
@@ -231,22 +234,22 @@ export default function Debts() {
                 {/* Progress */}
                 {debt.amount > 0 && (
                   <div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className={clsx('h-full rounded-full transition-all', debt.type === 'lent' ? 'bg-blue-500' : 'bg-orange-500')}
                         style={{ width: `${Math.min(progress, 100)}%` }}
                       />
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span className="text-xs text-gray-400">{Math.round(progress)}% paid</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{Math.round(progress)}% paid</span>
                       {debt.status !== 'settled' && (
-                        <span className="text-xs text-gray-400">Remaining: {formatCurrency(remaining, data.currency)}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">Remaining: {formatCurrency(remaining, data.currency)}</span>
                       )}
                     </div>
                   </div>
                 )}
 
-                {debt.description && <p className="text-xs text-gray-400">{debt.description}</p>}
+                {debt.description && <p className="text-xs text-gray-400 dark:text-gray-500">{debt.description}</p>}
 
                 <div className="flex gap-2">
                   {debt.status !== 'settled' && (

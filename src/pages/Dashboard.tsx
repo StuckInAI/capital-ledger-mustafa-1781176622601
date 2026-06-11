@@ -38,8 +38,8 @@ export default function Dashboard() {
       {/* Greeting */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-400 text-sm">{greeting} 👋</p>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">{greeting} 👋</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {data.userName || 'Welcome!'}
           </h1>
         </div>
@@ -96,10 +96,10 @@ export default function Dashboard() {
       {/* Recent Transactions */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold text-gray-900">Recent Transactions</h2>
+          <h2 className="font-bold text-gray-900 dark:text-gray-100">Recent Transactions</h2>
           <button
             onClick={() => navigate('/transactions')}
-            className="text-blue-600 text-sm flex items-center gap-1 hover:underline"
+            className="text-blue-600 dark:text-blue-400 text-sm flex items-center gap-1 hover:underline"
           >
             See all <ArrowRight size={14} />
           </button>
@@ -108,8 +108,8 @@ export default function Dashboard() {
         {recentTxs.length === 0 ? (
           <div className="card text-center py-8">
             <p className="text-3xl mb-2">📊</p>
-            <p className="text-gray-400 text-sm">No transactions yet</p>
-            <button onClick={() => setShowAdd(true)} className="text-blue-600 text-sm mt-2 hover:underline">
+            <p className="text-gray-400 dark:text-gray-500 text-sm">No transactions yet</p>
+            <button onClick={() => setShowAdd(true)} className="text-blue-600 dark:text-blue-400 text-sm mt-2 hover:underline">
               Add your first one
             </button>
           </div>
@@ -119,7 +119,9 @@ export default function Dashboard() {
               <div key={tx.id} className="card flex items-center gap-3 py-3">
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                    tx.type === 'income' ? 'bg-green-50' : 'bg-red-50'
+                    tx.type === 'income'
+                      ? 'bg-green-50 dark:bg-green-900/30'
+                      : 'bg-red-50 dark:bg-red-900/30'
                   }`}
                 >
                   <span className="text-lg">
@@ -127,14 +129,14 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 text-sm truncate">
+                  <p className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
                     {tx.description || tx.category}
                   </p>
-                  <p className="text-xs text-gray-400">{formatDate(tx.date)}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{formatDate(tx.date)}</p>
                 </div>
                 <p
                   className={`font-bold text-sm ${
-                    tx.type === 'income' ? 'text-green-600' : 'text-red-500'
+                    tx.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'
                   }`}
                 >
                   {tx.type === 'income' ? '+' : '-'}
